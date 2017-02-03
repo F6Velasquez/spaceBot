@@ -1,373 +1,215 @@
-![](http://i.imgur.com/C6nTeCS.png)
-
-Easy way to write Telegram bots.
-
-[![Build Status](https://travis-ci.org/kosmodrey/telebot.svg)](https://travis-ci.org/kosmodrey/telebot) [![Dependency Status](https://david-dm.org/kosmodrey/telebot.svg)](https://david-dm.org/kosmodrey/telebot) ![Node.js Version](http://img.shields.io/node/v/telebot.svg)
-
-**Library features:**
-
-- Simple. Easy to use.
-- Full [Telegram Bot API](https://core.telegram.org/bots/API) support.
-- Support modules.
-- No callbacks, Promises only.
-- Build-in modification and event system.
-- Extendable and hackable.
-- Readable [changelog](https://github.com/kosmodrey/telebot/releases).
-
-## Installation
-
-Download and install via [npm package manager](https://www.npmjs.com/package/telebot) (stable):
-
-```
-npm install telebot
-```
-
-Or clone fresh code directly from git:
-
-```
-git clone https://github.com/kosmodrey/telebot.git
-cd telebot
-npm install
-```
-
-## Usage
-
-Import `telebot` module and create a new bot object:
-
-```js
-const TeleBot = require('telebot');
-
-const bot = new TeleBot({
-  token: '-PASTEYOURTELEGRAMBOTAPITOKENHERE-', // Required. Telegram Bot API token.
-  polling: { // Optional. Use polling.
-    interval: 1000, // Optional. How often check updates (in ms).
-    timeout: 0, // Optional. Update polling timeout (0 - short polling).
-    limit: 100, // Optional. Limits the number of updates to be retrieved.
-    retryTimeout: 5000 // Optional. Reconnecting timeout (in ms).
-  },
-  webhook: { // Optional. Use webhook instead of polling.
-    key: '__YOUR_KEY__.pem', // Optional. Private key for server.
-    cert: '__YOUR_CERT__.pem', // Optional. Public key.
-    url: 'https://....', // HTTPS url to send updates to.
-    host: '0.0.0.0', // Webhook server host.
-    port: 443 // Server port.
-  },
-  modules: {
-    // Optional. Module configuration.
-    //
-    // Example:
-    //
-    // myModuleName: {
-    //   data: 'my module data'
-    // }
-    }
-  }
-});
-```
-
-Or just:
-
-```js
-const TeleBot = require('telebot');
-const bot = new TeleBot('-PASTEYOURTELEGRAMBOTAPITOKENHERE-');
-```
-
-*Replace `token` value to your [Telegram Bot API](https://core.telegram.org/bots#create-a-new-bot) token key.*
-
-To start getting updates, use ```bot.connect()```.
-
-```js
-bot.on('text', msg => {
-  let fromId = msg.from.id;
-  let firstName = msg.from.first_name;
-  let reply = msg.message_id;
-  return bot.sendMessage(fromId, `Welcome, ${ firstName }!`, { reply });
-});
-
-bot.connect();
-```
-
-This code will send a "welcome" to every users `text` type message as a reply.
-
-***[See more examples!](/examples)***
-
-## Events
-
-Use ```bot.on(<event>, <function>)``` to handle all possible TeleBot events.
-
-To catch a command with arguments, just add a slash:
-
-```js
-bot.on('/hello', msg => {
-  let [cmdName, firstName, lastName] = msg.text.split(' ');
-  return bot.sendMessage(msg.from.id, `Hello, ${ firstName } ${ lastName }!`);
-});
-```
+Node.js sample app on OpenShift!
+-----------------
 
-Also, you can catch multiple events:
+This example will serve a welcome page and the current hit count as stored in a database.
 
-```js
-bot.on(['/start', '/help', 'sticker'], msg => {
-  return bot.sendMessage(msg.from.id, 'Bam!');
-});
-```
+### OpenShift Origin v3 setup
 
-### TeleBot events:
+There are four methods to get started with OpenShift v3:
 
-- **/&#42;** – any user command
-- **/\<cmd\>** – on specific command
-- **connect** – bot connected
-- **disconnect** – bot disconnected
-- **reconnecting** – bot reconnecting
-- **reconnected** – bot successfully reconnected
-- **update** - on update
-- **tick** – on bot tick
-- **error** – an error occurred
-- **inlineQuery** - inline query data
-- **inlineChoice** - inline query chosen result
-- **callbackQuery** - button callback data
+  - Running a virtual machine with Vagrant
+  - Starting a Docker container
+  - Downloading the binary
+  - Running an Ansible playbook
 
-#### Action events:
+#### Running a virtual machine with Vagrant
 
-*keyboard*, *button*, *inlineKeyboard*, *inlineQueryKeyboard*, *inlineButton*, *answerList*, *getMe*, *sendMessage*, *forwardMessage*, *sendPhoto*, *sendAudio*, *sendDocument*, *sendSticker*, *sendVideo*, *sendVoice*, *sendLocation*, *sendVenue*, *sendContact*, *sendChatAction*, *getUserProfilePhotos*, *getFile*, *kickChatMember*, *unbanChatMember*, *answerInlineQuery*, *answerCallbackQuery*, *editMessageText*, *editMessageCaption*, *editMessageReplyMarkup*, *setWebhook*
+One option is to use the Vagrant all-in-one launch as described in the [OpenShift Origin All-In-One Virtual Machine](https://www.openshift.org/vm/). This option works on Mac, Windows and Linux, but requires that you install [Vagrant](https://www.vagrantup.com/downloads.html) running [VirtualBox](https://www.virtualbox.org/wiki/Downloads).
 
-### Telegram message events:
+#### Starting a Docker container
 
-- **&#42;** - any type of message
-- **text** – text message
-- **audio** – audio file
-- **voice** – voice message
-- **document** – document file (any kind)
-- **photo** – photo
-- **sticker** – sticker
-- **video** – video file
-- **contact** – contact data
-- **location** – location data
-- **venue** – venue data
-- **edited** – edited message
-- **pinnedMessage** – message was pinned
-- **userJoined** – new member was added
-- **userLeft** – member was removed
-- **newTitle** – new chat title
-- **newPhoto** – new chat photo
-- **deletePhoto** – chat photo was deleted
-- **groupCreated** – group has been created
-- **channelCreated** – channel has been created
-- **supergroupCreated** – supergroup has been created
-- **migrateTo** – group has been migrated to a supergroup
-- **migrateFrom** – supergroup has been migrated from a group
+Another option is running the OpenShift Origin Docker container image from [Docker Hub](https://hub.docker.com/r/openshift/origin/) launch as described in the [Getting Started for Administrators](https://docs.openshift.org/latest/getting_started/administrators.html#running-in-a-docker-container). This method is supported on Fedora, CentOS, and Red Hat Enterprise Linux (RHEL) hosts only.
 
+#### Downloading the Binary
 
-*Read more about Telegram Bot API response types: https://core.telegram.org/bots/api#available-types*
+Red Hat periodically publishes OpenShift Origin Server binaries for Linux, which you can download on the OpenShift Origin GitHub [Release](https://github.com/openshift/origin/releases) page. Instructions on how to install and launch the Openshift Origin Server from binary are described in [Getting Started for Administrators](https://docs.openshift.org/latest/getting_started/administrators.html#downloading-the-binary).
 
-## Modifiers
+#### Running an Ansible playbook
 
-You can add modifier to process data before passing it to event.
+Outlined as the [Advanced Installation](https://docs.openshift.org/latest/install_config/install/advanced_install.html) method for poduction environments, OpenShift Origin is also installable via Ansible playbook made avaialble on the GitHub [openshift-ansible](https://github.com/openshift/openshift-ansible) repo.
 
-```js
-bot.mod('text', data => {
-  let msg = data.msg;
-  msg.text = `📢 ${ msg.text }`;
-  return data;
-});
-```
 
-This code adds emoji to every `text` message.
+### Creating a project
 
-### TeleBot modifiers:
+After logging in with `oc login` (default username/password: openshift), if you don't have a project setup all ready, go ahead and take care of that:
 
-- **property** - mod form properties
-- **updateList** - list of updates in one tick
-- **update** - every update
-- **message** - process any type of message
-- **\<type\>** - specific type of message (*text, voice, document, photo, sticker, video, contact, location* or *venue*)
+        $ oc new-project nodejs-echo \
+        $ --display-name="nodejs" --description="Sample Node.js app"
 
-## Modules
+That's it, project has been created.  Though it would probably be good to set your current project to this (thought new-project does it automatically as well), such as:
 
-Use ```bot.use(require(<module_path>))``` to add a module.
+        $ oc project nodejs-echo
 
-***[Check out module folder!](/modules)***
+### Creating new apps
 
-## Methods
+You can create a new OpenShift application using the web console or by running the `oc new-app` command from the CLI. With the  OpenShift CLI there are three ways to create a new application, by specifying either:
 
-### TeleBot methods:
+- [source code](https://docs.openshift.com/enterprise/3.0/dev_guide/new_app.html#specifying-source-code)
+- [OpenShift templates](https://docs.openshift.com/enterprise/3.0/dev_guide/new_app.html#specifying-a-template)
+- [DockerHub images](https://docs.openshift.com/enterprise/3.0/dev_guide/new_app.html#specifying-an-image)
 
-##### `on(<events>, <function>)`
+#### Create a new app from source code (method 1)
 
-Handles events.
+Pointing `oc new-app` at source code kicks off a chain of events, for our example run:
 
-##### `event(<event>, <data>)`
+        $ oc new-app https://github.com/openshift/nodejs-ex -l name=myapp
 
-Invokes the event handlers.
+The tool will inspect the source code, locate an appropriate image on DockerHub, create an ImageStream for that image, and then create the right build configuration, deployment configuration and service definition.
 
-##### `mod(<name>, <fn>)`
+(The -l flag will apply a label of "name=myapp" to all the resources created by new-app, for easy management later.)
 
-Add data modifier.
+#### Create a new app from a template (method 2)
 
-##### `runMod(<names>, <data>)`
+We can also [create new apps using OpenShift template files](https://docs.openshift.com/enterprise/3.0/dev_guide/new_app.html#specifying-a-template). Clone the demo app source code from [GitHub repo](https://github.com/openshift/nodejs-ex) (fork if you like).
 
-Run data modifiers.
+        $ git clone https://github.com/openshift/nodejs-ex
 
-##### `use(<function>)`
+Looking at the repo, you'll notice three files in the openshift/template directory:
 
-Use module function.
+	nodejs-ex
+	├── openshift
+	│   └── templates
+	│       ├── nodejs.json
+	│       ├── nodejs-mongodb.json
+	│       └── nodejs-mongodb-persistent.json
+	├── package.json
+	├── README.md
+	├── server.js
+	├── tests
+	│   └── app_test.js
+	└── views
+	    └── index.html
 
-##### `keyboard([array of arrays], {resize, once, selective})`
+We can create the the new app from the `nodejs.json` template by using the `-f` flag and pointing the tool at a path to the template file:
 
-Creates `ReplyKeyboardMarkup` keyboard `markup` object.
+        $ oc new-app -f /path/to/nodejs.json
 
-##### `button(<location | contact>, <text>)`
+#### Build the app
 
-Creates `KeyboardButton` button.
+`oc new-app` will kick off a build once all required dependencies are confirmed.
 
-##### `inlineButton(<text>, {url | callback | inline})`
+Check the status of your new nodejs app with the command:
 
-Creates `InlineKeyboardButton` button object.
+        $ oc status
 
-##### `inlineKeyboard([array of arrays])`
+Which should return something like:
 
-Creates inlineKeyboard object for normal bot messages.
+        In project nodejs (nodejs-echo) on server https://10.2.2.2:8443
 
-##### `answerList(<inline_query_id>, {nextOffset, cacheTime, personal})`
+        svc/nodejs-ex - 172.30.108.183:8080
+          dc/nodejs-ex deploys istag/nodejs-ex:latest <-
+            bc/nodejs-ex builds https://github.com/openshift/nodejs-ex with openshift/nodejs:0.10
+              build #1 running for 7 seconds
+            deployment #1 waiting on image or update
 
-Creates `answerInlineQuery` answer list object.
+Note the server address for the web console, as yours will likely differ if you're not using the Vagrant set-up. You can follow along with the web console to see what new resources have been created and watch the progress of builds and deployments.
 
-##### `inlineQueryKeyboard([array of arrays])`
+If the build is not yet started (you can check by running `oc get builds`), start one and stream the logs with:
 
-Creates inlineKeyboard object for answerList articles.
+        $ oc start-build nodejs-ex --follow
 
-##### `connect()`
+You can alternatively leave off `--follow` and use `oc logs build/nodejs-ex-n` where *n* is the number of the build to track the output of the build.
 
-Start polling updates.
+#### Deploy the app
 
-##### `disconnect(<message>)`
+Deployment happens automatically once the new application image is available.  To monitor its status either watch the web console or execute `oc get pods` to see when the pod is up.  Another helpful command is
 
-Stop polling updates.
+        $ oc get svc
 
-### Telegram methods:
+This will help indicate what IP address the service is running, the default port for it to deploy at is 8080. Output should look like:
 
-TeleBot use standard [Telegram Bot API](https://core.telegram.org/bots/api#available-methods) method names.
+        NAME        CLUSTER-IP       EXTERNAL-IP   PORT(S)    SELECTOR                                AGE
+        nodejs-ex   172.30.249.251   <none>        8080/TCP   deploymentconfig=nodejs-ex,name=myapp   17m
 
-##### `getMe()`
+#### Configure routing
 
-A simple method for testing your bot's auth token.
+An OpenShift route exposes a service at a host name, like www.example.com, so that external clients can reach it by name.
 
-##### `answerQuery(<answerList>)`
+DNS resolution for a host name is handled separately from routing; you may wish to configure a cloud domain that will always correctly resolve to the OpenShift router, or if using an unrelated host name you may need to modify its DNS records independently to resolve to the router.
 
-Use this method to send `answerList` to an inline query.
+That aside, let's explore our new web console, which for our example is running at [https://10.2.2.2:8443](https://10.2.2.2:8443).
 
-##### `getFile(<file_id>)`
+After logging into the web console with your same CLI `oc login` credentials, click on the project we just created, then click `Create route`.
 
-Use this method to get basic info about a file and prepare it for downloading.
+If you're running OpenShift on a local machine, you can preview the new app by setting the Hostname to a localhost like: *10.2.2.2*.
 
-##### `sendMessage(<chat_id>, <text>, {reply, markup, notify})`
+This could also be accomplished by running:
 
-Use this method to send text messages.
+        $ oc expose svc/nodejs-ex --hostname=www.example.com
 
-##### `forwardMessage(<chat_id>, <from_chat_id>, <message_id>, {notify})`
+Now navigate to the newly created Node.js web app at the hostname we just configured, for our example it was simply [https://10.2.2.2](https://10.2.2.2).
 
-Use this method to forward messages of any kind.
+#### Create a new app from an image (method 3)
 
-##### `sendPhoto(<chat_id>, <file_id | path | url | buffer | stream>, {caption, fileName, reply, markup, notify})`
+You may have noticed the index page "Page view count" reads "No database configured". Let's fix that by adding a MongoDB service. We could use the second OpenShift template example (`nodejs-mongodb.json`) but for the sake of demonstration let's point `oc new-app` at a DockerHub image:
 
-Use this method to send photos.
+        $ oc new-app centos/mongodb-26-centos7 \
+        $ -e MONGODB_USER=admin,MONGODB_DATABASE=mongo_db,MONGODB_PASSWORD=secret,MONGODB_ADMIN_PASSWORD=super-secret
 
-##### `sendAudio(<chat_id>, <file_id | path | url | buffer | stream>, {fileName, reply, markup, notify})`
+The `-e` flag sets the environment variables we want used in the configuration of our new app.
 
-Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
+Running `oc status` or checking the web console will reveal the address of the newly created MongoDB:
 
-##### `sendDocument(<chat_id>, <file_id | path | url | buffer | stream>, {caption, fileName, reply, markup, notify})`
+	In project nodejs-echo on server https://10.2.2.2:8443
 
-Use this method to send general files.
+	svc/mongodb-26-centos7 - 172.30.0.112:27017
+	  dc/mongodb-26-centos7 deploys istag/mongodb-26-centos7:latest
+	    deployment #1 running for 43 seconds - 1 pod
 
-##### `sendSticker(<chat_id>, <file_id | path | url | buffer | stream>, {fileName, reply, markup, notify})`
+	http://10.2.2.2 to pod port 8080-tcp (svc/nodejs-ex)
+	  dc/nodejs-ex deploys istag/nodejs-ex:latest <-
+	    bc/nodejs-ex builds https://github.com/openshift/nodejs-ex with openshift/nodejs:0.10
+	    deployment #1 deployed 14 minutes ago - 1 pod
 
-Use this method to send `.webp` stickers.
+Note that the url for our new Mongo instance, for our example, is `172.30.0.112:27017`, yours will likely differ.
 
-##### `sendVideo(<chat_id>, <file_id | path | url | buffer | stream>, {caption, fileName, reply, markup, notify})`
+#### Setting environment variables
 
-Use this method to send video files, Telegram clients support `mp4` videos (other formats may be sent as `Document`).
+To take a look at environment variables set for each pod, run `oc env pods --all --list`.
 
-##### `sendVoice(<chat_id>, <file_id | path | url | buffer | stream>, {fileName, reply, markup, notify})`
+We need to add the environment variable `MONGO_URL` to our Node.js web app so that it will utilize our MongoDB, and enable the "Page view count" feature. Run:
 
-Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
+        $ oc set env dc/nodejs-ex MONGO_URL='mongodb://admin:secret@172.30.0.112:27017/mongo_db'
 
-##### `sendLocation(<chat_id>, [<latitude>, <longitude>], {reply, markup, notify})`
+Then check `oc status` to see that an updated deployment has been kicked off:
 
-Use this method to send point on the map.
+	In project nodejs-echo on server https://10.2.2.2:8443
 
-##### `sendVenue(<chat_id>, [<latitude>, <longitude>], <title>, <address>, {foursquare, reply, markup, notify})`
+	svc/mongodb-26-centos7 - 172.30.0.112:27017
+	  dc/mongodb-26-centos7 deploys istag/mongodb-26-centos7:latest
+	    deployment #1 deployed 2 hours ago - 1 pod
 
-Use this method to send information about a venue.
+	http://10.2.2.2 to pod port 8080-tcp (svc/nodejs-ex)
+	  dc/nodejs-ex deploys istag/nodejs-ex:latest <-
+	    bc/nodejs-ex builds https://github.com/openshift/nodejs-ex with openshift/nodejs:0.10
+	    deployment #2 deployed about a minute ago - 1 pod
+	    deployment #1 deployed 2 hours ago
 
-##### `sendContact(<chat_id>, <number>, <firstName>, <lastName>, { reply, markup, notify})`
+#### Success
 
-Use this method to send phone contacts.
+You should now have a Node.js welcome page showing the current hit count, as stored in a MongoDB database.
 
-##### `sendAction(<chat_id>, <action>)`
+#### Pushing updates
 
-Use this method when you need to tell the user that something is happening on the bot's side.
+Assuming you used the URL of your own forked repository, we can easily push changes and simply repeat the steps above which will trigger the newly built image to be deployed.
 
-##### `getUserProfilePhotos` as `getUserPhoto(<chat_id>, {offset, limit})`
+### Debugging
 
-Use this method to get a list of profile pictures for a user.
+Review some of the common tips and suggestions [here](https://github.com/openshift/origin/blob/master/docs/debugging-openshift.md).
 
-##### `getFile(<file_id>)`
+### Web UI
 
-Use this method to get basic info about a file and prepare it for downloading.
+To run this example from the Web UI, you can same steps following done on the CLI as defined above. Here's a video showing it in motion:
 
-##### `getChat(<chat_id>)`
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=uocucZqg_0I&t=225" target="_blank">
+<img src="http://img.youtube.com/vi/uocucZqg_0I/0.jpg"
+alt="OpenShift 3: Node.js Sample" width="240" height="180" border="10" /></a>
 
-Use this method to get up to date information about the chat.
+## Looking for help
 
-##### `leaveChat(<chat_id>)`
+If you get stuck at some point, or think that this document needs further details or clarification, you can give feedback and look for help using the channels mentioned in [the OpenShift Origin repo](https://github.com/openshift/origin), or by filing an issue.
 
-Use this method for your bot to leave a group, supergroup or channel.
 
-##### `getChatAdministrators` as `getAdmins(<chat_id>)`
+## License
 
-Use this method to get a list of administrators in a chat.
-
-##### `getChatMembersCount` as `countMembers(<chat_id>)`
-
-Use this method to get the number of members in a chat.
-
-##### `getChatMember` as `getMember(<chat_id>, <user_id>)`
-
-Use this method to get information about a member of a chat.
-
-##### `kickChatMember` as `kick(<chat_id>, <user_id>)`
-
-Use this method to kick a user from a group or a supergroup.
-
-##### `unbanChatMember` as `unban(<chat_id>, <user_id>)`
-
-Use this method to unban a previously kicked user in a supergroup.
-
-##### `editMessageText` as `editText({chatId & messageId | inlineMsgId}, <text>)`
-
-Use this method to edit text messages sent by the bot or via the bot (for inline bots).
-
-##### `editMessageCaption` as `editCaption({chat & message | inline}, <caption>)`
-
-Use this method to edit captions of messages sent by the bot or via the bot (for inline bots).
-
-##### `editMessageReplyMarkup` as `editMarkup({chat & message | inline}, <markup>)`
-
-Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
-
-##### `answerCallbackQuery` as `answerCallback(<callback_query_id>, <text>, <show_alert>)`
-
-Use this method to send answers to callback queries sent from inline keyboards.
-
-##### `setWebhook(<url>, <certificate>)`
-
-Use this method to specify a url and receive incoming updates via an outgoing webhook.
-
-##### `getWebhookInfo()`
-
-Use this method to get current webhook status.
-
-## Documentation
-
-Read [wiki on GitHub](https://github.com/kosmodrey/telebot/wiki).
+This code is dedicated to the public domain to the maximum extent permitted by applicable law, pursuant to [CC0](http://creativecommons.org/publicdomain/zero/1.0/).

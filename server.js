@@ -14,8 +14,8 @@ const bot = new TeleBot('313959447:AAHJE3FYCJc8HsraZXuXCHLm2u9F6MwvRiM');
 
 // On every text message
 bot.on('text', msg => {
-  let id = msg.from.id;
-  let text = msg.text;
+  var  id = msg.from.id;
+  var text = msg.text;
   return bot.sendMessage(id, `You said: ${ text }`);
 });
 
